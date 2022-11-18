@@ -6,6 +6,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func Map(mux *mux.Router, controller users.Controller, mw *middleware.Middleware) {
-	mux.HandleFunc("/register", controller.RegisterUser()).Methods("POST")
+func Map(mux *mux.Router, cont users.Controller, mw *middleware.Middleware) {
+	mux.HandleFunc("/register", cont.RegisterUser()).Methods("POST")
 }

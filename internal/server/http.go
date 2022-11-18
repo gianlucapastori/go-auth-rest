@@ -9,10 +9,13 @@ import (
 	usersRepo "github.com/gianlucapastori/nausicaa/internal/packages/users/repo"
 	usersServices "github.com/gianlucapastori/nausicaa/internal/packages/users/services"
 	"github.com/gianlucapastori/nausicaa/pkg/utils"
+	"github.com/gianlucapastori/nausicaa/pkg/validator"
 	"github.com/gorilla/mux"
 )
 
 func (s *Server) Map(mux *mux.Router, mw *middleware.Middleware) error {
+	validator.New()
+
 	// base middlewares
 	mux.Use(mw.JSON)
 	mux.Use(mw.CORS)
