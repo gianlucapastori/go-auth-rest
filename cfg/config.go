@@ -1,6 +1,8 @@
 package cfg
 
 import (
+	"fmt"
+
 	"github.com/spf13/viper"
 )
 
@@ -41,7 +43,7 @@ func New(name string) (*viper.Viper, error) {
 	v.AutomaticEnv()
 
 	if err := v.ReadInConfig(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not read in config: %v", err)
 	}
 
 	return v, nil
@@ -51,7 +53,7 @@ func Parse(v *viper.Viper) (*Config, error) {
 	var cfg *Config
 
 	if err := v.Unmarshal(&cfg); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not unmarsh into config: %v", err)
 	}
 
 	return cfg, nil
