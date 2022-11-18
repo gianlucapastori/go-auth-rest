@@ -41,7 +41,7 @@ func (s *Server) Serve() error {
 		}
 	}()
 
-	if err := s.Map(); err != nil {
+	if err := s.Map(s.mux); err != nil {
 		return fmt.Errorf("could not map api: %v", err)
 	}
 
