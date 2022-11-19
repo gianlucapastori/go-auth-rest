@@ -21,10 +21,10 @@ func (*userService) Register(user *entities.User) (*entities.User, error) {
 	panic("unimplemented")
 }
 
-func (*userService) FetchByEmail(email string) (*entities.User, error) {
-	panic("unimplemented")
+func (uS *userService) FetchByEmail(email string) (*entities.User, error) {
+	return uS.repo.FetchUserByEmail(email)
 }
 
-func (*userService) FetchByUsername(username string) (*entities.User, error) {
-	panic("unimplemented")
+func (uS *userService) FetchByUsername(username string) (*entities.User, error) {
+	return uS.repo.FetchUserByUsername(username)
 }
