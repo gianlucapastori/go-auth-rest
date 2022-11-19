@@ -1,11 +1,8 @@
 package repo
 
 import (
-	"errors"
-
 	"github.com/gianlucapastori/nausicaa/internal/entities"
 	"github.com/gianlucapastori/nausicaa/internal/packages/users"
-	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -38,10 +35,6 @@ func (uR *userRepo) FetchUserByEmail(email string) (*entities.User, error) {
 		}
 	}
 
-	if u.Id != uuid.Nil {
-		return nil, errors.New("email already in use")
-	}
-
 	return u, nil
 }
 
@@ -60,10 +53,6 @@ func (uR *userRepo) FetchUserByUsername(username string) (*entities.User, error)
 		if err := row.Scan(&u.Id, &u.FirstName, &u.LastName, &u.Username, &u.Email, &u.Password); err != nil {
 			return nil, err
 		}
-	}
-
-	if u.Id != uuid.Nil {
-		return nil, errors.New("username already in use")
 	}
 
 	return u, nil

@@ -1,12 +1,14 @@
 package http
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/gianlucapastori/nausicaa/cfg"
 	"github.com/gianlucapastori/nausicaa/internal/packages/users"
 	"github.com/gianlucapastori/nausicaa/pkg/utils"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -18,6 +20,30 @@ type userController struct {
 
 func New(serv users.Services, cfg *cfg.Config, sugar *zap.SugaredLogger) users.Controller {
 	return &userController{serv: serv, cfg: cfg, sugar: sugar}
+}
+
+func (uC *userController) isEmailAvailable(email string) error {
+	if u, err := uC.serv.FetchByEmail(email); err != nil {
+		uC.sugar.Errorf(err.Error())
+		if u.Id != uuid.Nil {
+			return errors.New("email already in use")
+		}
+
+		return err
+	}
+	return nil
+}
+
+func (uC *userController) isUsernameAvailable(username string) error {
+	if u, err := uC.serv.FetchByUsername(username); err != nil {
+		uC.sugar.Errorf(err.Error())
+		if u.Id != uuid.Nil {
+			return errors.New("username already in use")
+		}
+
+		return err
+	}
+	return nil
 }
 
 func (uC *userController) RegisterUser() http.HandlerFunc {
@@ -36,30 +62,15 @@ func (uC *userController) RegisterUser() http.HandlerFunc {
 		if err := utils.ReadRequest(r, req); err != nil {
 			uC.sugar.Errorf("error while reading request: %v", err.Error())
 			utils.Respond(w, http.StatusInternalServerError, err.Error())
-
 			return
 		}
 
-		if _, err := uC.serv.FetchByEmail(req.Email); err != nil {
-			uC.sugar.Errorf(err.Error())
-
-			if err.Error() == "email already in use" {
-				utils.Respond(w, http.StatusBadRequest, err.Error())
-				return
-			}
-
+		if err := uC.isEmailAvailable(req.Email); err != nil {
 			utils.Respond(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		if _, err := uC.serv.FetchByUsername(req.Username); err != nil {
-			uC.sugar.Errorf(err.Error())
-
-			if err.Error() == "username already in use" {
-				utils.Respond(w, http.StatusBadRequest, err.Error())
-				return
-			}
-
+		if err := uC.isUsernameAvailable(req.Username); err != nil {
 			utils.Respond(w, http.StatusInternalServerError, err.Error())
 			return
 		}
