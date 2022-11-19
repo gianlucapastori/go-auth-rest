@@ -57,27 +57,33 @@ func (uC *userController) RegisterUser() http.HandlerFunc {
 			return
 		}
 
-		if acc, ref, err := jwt.RequestTokens(u, uC.cfg); err != nil {
+		if err := uC.SendTokensToCookie(w, u); err != nil {
 			utils.Respond(w, http.StatusInternalServerError, err.Error())
-			return
-		} else {
-			acccookie := &http.Cookie{
-				Name:   uC.cfg.SERVER.JWT.ACCESS_COOKIE_NAME,
-				Value:  acc,
-				Secure: true,
-			}
-
-			refcookie := &http.Cookie{
-				Name:     uC.cfg.SERVER.JWT.REFRESH_COOKIE_NAME,
-				Value:    ref,
-				Secure:   true,
-				HttpOnly: true,
-			}
-
-			http.SetCookie(w, acccookie)
-			http.SetCookie(w, refcookie)
 		}
 
 		utils.Respond(w, http.StatusOK, fmt.Sprintf("user %s created", u.Username))
+	}
+}
+
+func (uC *userController) SendTokensToCookie(w http.ResponseWriter, user *entities.User) error {
+	if acc, ref, err := jwt.RequestTokens(user, uC.cfg); err != nil {
+		return err
+	} else {
+		acccookie := &http.Cookie{
+			Name:   uC.cfg.SERVER.JWT.ACCESS_COOKIE_NAME,
+			Value:  acc,
+			Secure: true,
+		}
+
+		refcookie := &http.Cookie{
+			Name:     uC.cfg.SERVER.JWT.REFRESH_COOKIE_NAME,
+			Value:    ref,
+			Secure:   true,
+			HttpOnly: true,
+		}
+
+		http.SetCookie(w, acccookie)
+		http.SetCookie(w, refcookie)
+		return nil
 	}
 }
