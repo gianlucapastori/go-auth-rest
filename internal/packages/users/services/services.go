@@ -29,7 +29,12 @@ func (uS *userService) Register(user *entities.User) (*entities.User, error) {
 		return nil, err
 	}
 
-	return nil, nil
+	u, err := uS.repo.InsertUser(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return u, nil
 }
 
 func (uS *userService) FetchByEmail(email string) (*entities.User, error) {

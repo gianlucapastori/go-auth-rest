@@ -20,8 +20,9 @@ type Server struct {
 
 type Jwt struct {
 	REFRESH_COOKIE_NAME string
-	REFRESH_EXPIRES_AT  string
-	ACCESS_EXPIRES_AT   string
+	ACCESS_COOKIE_NAME  string
+	REFRESH_EXPIRES_AT  int32
+	ACCESS_EXPIRES_AT   int32
 	SECRET_KEY          string
 }
 

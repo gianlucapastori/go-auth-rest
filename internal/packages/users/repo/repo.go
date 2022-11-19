@@ -14,8 +14,26 @@ func New(db *sqlx.DB) users.Repo {
 	return &userRepo{db: db}
 }
 
-func (uR *userRepo) InsertUser(user *entities.User) error {
-	panic("")
+func (uR *userRepo) InsertUser(user *entities.User) (*entities.User, error) {
+	INSERT_USER_SQL := `INSERT INTO users(first_name,last_name,username,email,password) VALUES ($1,$2,$3,$4,$5) `
+
+	_, err := uR.db.Queryx(INSERT_USER_SQL,
+		user.FirstName,
+		user.LastName,
+		user.Username,
+		user.Email,
+		user.Password,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	u, err := uR.FetchUserByUsername(user.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	return u, nil
 }
 
 func (uR *userRepo) FetchUserByEmail(email string) (*entities.User, error) {

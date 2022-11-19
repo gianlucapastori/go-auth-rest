@@ -7,6 +7,7 @@ import (
 	"github.com/gianlucapastori/nausicaa/cfg"
 	"github.com/gianlucapastori/nausicaa/internal/entities"
 	"github.com/gianlucapastori/nausicaa/internal/packages/users"
+	"github.com/gianlucapastori/nausicaa/pkg/jwt"
 	"github.com/gianlucapastori/nausicaa/pkg/utils"
 	"go.uber.org/zap"
 )
@@ -40,21 +41,43 @@ func (uC *userController) RegisterUser() http.HandlerFunc {
 			return
 		}
 
-		if _, err := uC.serv.Register(&entities.User{
+		u, err := uC.serv.Register(&entities.User{
 			FirstName: req.FirstName,
 			LastName:  req.LastName,
 			Username:  req.Username,
 			Email:     req.Email,
 			Password:  req.Password,
-		}); err != nil {
+		})
+		if err != nil {
 			if err.Error() == "email already in use" || err.Error() == "username already in use" {
 				utils.Respond(w, http.StatusBadRequest, err.Error())
 				return
 			}
-			utils.Respond(w, 200, err.Error())
+			utils.Respond(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		utils.Respond(w, http.StatusOK, fmt.Sprintf("user %s created", req.Username))
+		if acc, ref, err := jwt.RequestTokens(u, uC.cfg); err != nil {
+			utils.Respond(w, http.StatusInternalServerError, err.Error())
+			return
+		} else {
+			acccookie := &http.Cookie{
+				Name:   uC.cfg.SERVER.JWT.ACCESS_COOKIE_NAME,
+				Value:  acc,
+				Secure: true,
+			}
+
+			refcookie := &http.Cookie{
+				Name:     uC.cfg.SERVER.JWT.REFRESH_COOKIE_NAME,
+				Value:    ref,
+				Secure:   true,
+				HttpOnly: true,
+			}
+
+			http.SetCookie(w, acccookie)
+			http.SetCookie(w, refcookie)
+		}
+
+		utils.Respond(w, http.StatusOK, fmt.Sprintf("user %s created", u.Username))
 	}
 }

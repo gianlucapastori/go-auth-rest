@@ -4,7 +4,8 @@ server:
   ENV: "Development"
   jwt:
     REFRESH_COOKIE_NAME: "auth-refresh-token"
-    REFRESH_EXPIRES_AT: 30
+    ACCESS_COOKIE_NAME: "auth-access-token"
+    REFRESH_EXPIRES_AT: 43200
     ACCESS_EXPIRES_AT: 5
     SECRET_KEY: "secret :)"
 database:
