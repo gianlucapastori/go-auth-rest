@@ -23,7 +23,8 @@ type Jwt struct {
 	ACCESS_COOKIE_NAME  string
 	REFRESH_EXPIRES_AT  int32
 	ACCESS_EXPIRES_AT   int32
-	SECRET_KEY          string
+	SECRET_KEY_ACCESS   string
+	SECRET_KEY_REFRESH  string
 }
 
 type Database struct {

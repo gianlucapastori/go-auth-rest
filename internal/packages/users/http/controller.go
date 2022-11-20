@@ -48,6 +48,7 @@ func (uC *userController) RegisterUser() http.HandlerFunc {
 			Email:     req.Email,
 			Password:  req.Password,
 		})
+
 		if err != nil {
 			if err.Error() == "email already in use" || err.Error() == "username already in use" {
 				utils.Respond(w, http.StatusBadRequest, err.Error())
@@ -57,7 +58,7 @@ func (uC *userController) RegisterUser() http.HandlerFunc {
 			return
 		}
 
-		if err := uC.SendTokensToCookie(w, u); err != nil {
+		if err := uC.SendTokensToCookie(w, r, u); err != nil {
 			utils.Respond(w, http.StatusInternalServerError, err.Error())
 		}
 
@@ -65,25 +66,52 @@ func (uC *userController) RegisterUser() http.HandlerFunc {
 	}
 }
 
-func (uC *userController) SendTokensToCookie(w http.ResponseWriter, user *entities.User) error {
+func (uC *userController) Protected() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		utils.Respond(w, http.StatusOK, "access granted!")
+	}
+}
+
+func (uC *userController) RequestNewAccess() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if acc, _, err := jwt.RequestTokens(&entities.User{}, uC.cfg); err != nil {
+			utils.Respond(w, 500, err.Error())
+		} else {
+			acccookie := &http.Cookie{
+				Name:  uC.cfg.SERVER.JWT.ACCESS_COOKIE_NAME,
+				Value: acc,
+				Path:  "/",
+			}
+
+			http.SetCookie(w, acccookie)
+			r.AddCookie(acccookie)
+		}
+
+		utils.Respond(w, http.StatusOK, "")
+	}
+}
+
+func (uC *userController) SendTokensToCookie(w http.ResponseWriter, r *http.Request, user *entities.User) error {
 	if acc, ref, err := jwt.RequestTokens(user, uC.cfg); err != nil {
 		return err
 	} else {
 		acccookie := &http.Cookie{
-			Name:   uC.cfg.SERVER.JWT.ACCESS_COOKIE_NAME,
-			Value:  acc,
-			Secure: true,
+			Name:  uC.cfg.SERVER.JWT.ACCESS_COOKIE_NAME,
+			Value: acc,
+			Path:  "/",
 		}
 
 		refcookie := &http.Cookie{
 			Name:     uC.cfg.SERVER.JWT.REFRESH_COOKIE_NAME,
 			Value:    ref,
-			Secure:   true,
 			HttpOnly: true,
+			Path:     "/",
 		}
 
 		http.SetCookie(w, acccookie)
 		http.SetCookie(w, refcookie)
+		r.AddCookie(acccookie)
+		r.AddCookie(refcookie)
 		return nil
 	}
 }
