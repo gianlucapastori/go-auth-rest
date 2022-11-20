@@ -21,7 +21,7 @@ func (mw *Middleware) AuthJWT(h http.Handler) http.Handler {
 
 		if err := validateAccessToken(acctoken, mw.cfg); err != nil {
 			if err.Error() == "invalid jwt token" {
-				utils.Respond(w, http.StatusUnauthorized, err.Error())
+				utils.Respond(w, 403, err.Error())
 			}
 			utils.Respond(w, http.StatusInternalServerError, err.Error())
 			return
@@ -43,7 +43,7 @@ func (mw *Middleware) AuthRefresh(h http.Handler) http.Handler {
 
 		if err := validateRefreshToken(reftoken, mw.cfg); err != nil {
 			if err.Error() == "invalid jwt token" {
-				utils.Respond(w, http.StatusUnauthorized, err.Error())
+				utils.Respond(w, 403, err.Error())
 			}
 			utils.Respond(w, http.StatusInternalServerError, err.Error())
 			return

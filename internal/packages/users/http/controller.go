@@ -66,6 +66,51 @@ func (uC *userController) RegisterUser() http.HandlerFunc {
 	}
 }
 
+func (uC *userController) LoginUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		type Request struct {
+			Email                string `json:"email" validate:"email,required"`
+			Password             string `json:"password" validate:"gte=5,required"`
+			PasswordConfirmation string `json:"password_confirmation" validate:"gte=5,required"`
+		}
+
+		req := &Request{}
+
+		if err := utils.ReadRequest(r, req); err != nil {
+			uC.sugar.Errorf("error while reading request: %v", err.Error())
+			utils.Respond(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		if req.Password != req.PasswordConfirmation {
+			utils.Respond(w, http.StatusBadRequest, "password does not match")
+			return
+		}
+
+		u, err := uC.serv.FetchByEmail(req.Email)
+		if err != nil {
+			utils.Respond(w, 500, err.Error())
+			return
+		}
+		if u == nil {
+			utils.Respond(w, 403, "user not found with given email")
+			return
+		}
+
+		if err = uC.serv.Login(u, req.Password); err != nil {
+			utils.Respond(w, 500, err.Error())
+			return
+		}
+
+		if err := uC.SendTokensToCookie(w, r, u); err != nil {
+			utils.Respond(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		utils.Respond(w, http.StatusOK, fmt.Sprintf("user %s logged in!", u.Username))
+	}
+}
+
 func (uC *userController) Protected() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		utils.Respond(w, http.StatusOK, "access granted!")

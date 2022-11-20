@@ -29,12 +29,27 @@ func (uS *userService) Register(user *entities.User) (*entities.User, error) {
 		return nil, err
 	}
 
+	hash, err := user.HashPassword()
+	if err != nil {
+		return nil, err
+	}
+
+	user.Password = hash
+
 	u, err := uS.repo.InsertUser(user)
 	if err != nil {
 		return nil, err
 	}
 
 	return u, nil
+}
+
+func (uS *userService) Login(user *entities.User, pwd string) error {
+	if err := user.ComparePassword(pwd); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (uS *userService) FetchByEmail(email string) (*entities.User, error) {

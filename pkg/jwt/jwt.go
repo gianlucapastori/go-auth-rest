@@ -25,7 +25,7 @@ func RequestTokens(user *entities.User, cfg *cfg.Config) (string, string, error)
 		UserId:   user.Id,
 		Username: user.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(30 * time.Second)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(rand.Int31n(cfg.SERVER.JWT.ACCESS_EXPIRES_AT)) * time.Minute)),
 		},
 	}
 
