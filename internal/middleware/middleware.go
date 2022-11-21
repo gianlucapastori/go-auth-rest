@@ -4,16 +4,18 @@ import (
 	"net/http"
 
 	"github.com/gianlucapastori/nausicaa/cfg"
+	"github.com/gianlucapastori/nausicaa/internal/packages/users"
 	"go.uber.org/zap"
 )
 
 type Middleware struct {
 	cfg   *cfg.Config
+	serv  users.Services
 	sugar *zap.SugaredLogger
 }
 
-func New(cfg *cfg.Config, sugar *zap.SugaredLogger) *Middleware {
-	return &Middleware{cfg: cfg, sugar: sugar}
+func New(cfg *cfg.Config, serv users.Services, sugar *zap.SugaredLogger) *Middleware {
+	return &Middleware{cfg: cfg, serv: serv, sugar: sugar}
 }
 
 // default "generic" middlewares

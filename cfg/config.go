@@ -12,10 +12,12 @@ type Config struct {
 }
 
 type Server struct {
-	PORT    string
-	VERSION string
-	ENV     string
-	JWT     Jwt
+	PORT      string
+	VERSION   string
+	ENV       string
+	EMAIL     string
+	EMAIL_PWD string
+	JWT       Jwt
 }
 
 type Jwt struct {

@@ -20,6 +20,11 @@ type UserClaims struct {
 	jwt.RegisteredClaims
 }
 
+type PwdClaims struct {
+	Hash string `json:"hash"`
+	jwt.RegisteredClaims
+}
+
 func RequestTokens(user *entities.User, cfg *cfg.Config) (string, string, error) {
 	accclaims := UserClaims{
 		UserId:   user.Id,
@@ -46,6 +51,24 @@ func RequestTokens(user *entities.User, cfg *cfg.Config) (string, string, error)
 	}
 
 	return accTokenStr, refTokenStr, nil
+}
+
+func RequestPwdToken(hash string, cfg *cfg.Config) (string, error) {
+	pwdclaims := PwdClaims{
+		Hash: hash,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(5 * time.Minute))),
+		},
+	}
+
+	pwdtoken := jwt.NewWithClaims(jwt.SigningMethodHS256, pwdclaims)
+
+	pwdTokenStr, err := pwdtoken.SignedString([]byte(cfg.SERVER.JWT.SECRET_KEY_ACCESS))
+	if err != nil {
+		return "", err
+	}
+
+	return pwdTokenStr, nil
 }
 
 func ExtractBearer(r *http.Request) (string, error) {

@@ -2,10 +2,13 @@ package services
 
 import (
 	"errors"
+	"fmt"
+	"net/smtp"
 
 	"github.com/gianlucapastori/nausicaa/cfg"
 	"github.com/gianlucapastori/nausicaa/internal/entities"
 	"github.com/gianlucapastori/nausicaa/internal/packages/users"
+	"github.com/gianlucapastori/nausicaa/pkg/jwt"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
@@ -50,6 +53,49 @@ func (uS *userService) Login(user *entities.User, pwd string) error {
 	}
 
 	return nil
+}
+
+func (uS *userService) SendPwdResetEmail(user *entities.User) error {
+	// use hashed pwd as payload, you can request as much as you  want, but just one will do
+	token, err := jwt.RequestPwdToken(user.Password, uS.cfg)
+	if err != nil {
+		return err
+	}
+
+	email := []string{user.Email}
+
+	auth := smtp.PlainAuth("", uS.cfg.SERVER.EMAIL, uS.cfg.SERVER.EMAIL_PWD, "smtp.gmail.com")
+
+	subject := "Subject: new password request\r\n"
+	body := fmt.Sprintf("http://127.0.0.1:8080/api/v1/users/change-password?token=%s\r\nBye\r\n", token)
+
+	msg := subject + "\r\n" + body
+
+	err = smtp.SendMail("smtp.gmail.com:587", auth, uS.cfg.SERVER.EMAIL, email, []byte(msg))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (uS *userService) ChangePasswordByEmail(email string, pwd string) error {
+	u, err := uS.FetchByEmail(email)
+	if err != nil {
+		return err
+	}
+
+	if u == nil {
+		return errors.New("users does not exists? wtf")
+	}
+
+	u.Password = pwd
+
+	hash, err := u.HashPassword()
+	if err != nil {
+		return err
+	}
+
+	return uS.repo.ChangeUserPasswordByEmail(email, hash)
 }
 
 func (uS *userService) FetchByEmail(email string) (*entities.User, error) {

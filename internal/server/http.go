@@ -13,12 +13,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func (s *Server) Map(mux *mux.Router, mw *middleware.Middleware) error {
+func (s *Server) Map(mux *mux.Router) error {
 	validator.New()
-
-	// base middlewares
-	mux.Use(mw.JSON)
-	mux.Use(mw.CORS)
 
 	// repositories
 	uRepo := usersRepo.New(s.db)
@@ -28,6 +24,12 @@ func (s *Server) Map(mux *mux.Router, mw *middleware.Middleware) error {
 
 	// controllers
 	uCont := usersHttp.New(uServ, s.cfg, s.sugar)
+
+	mw := middleware.New(s.cfg, uServ, s.sugar)
+
+	// base middlewares
+	mux.Use(mw.JSON)
+	mux.Use(mw.CORS)
 
 	vRoute := mux.PathPrefix(fmt.Sprintf("/api/v%s", s.cfg.SERVER.VERSION)).Subrouter()
 

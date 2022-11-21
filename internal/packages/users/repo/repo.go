@@ -36,6 +36,17 @@ func (uR *userRepo) InsertUser(user *entities.User) (*entities.User, error) {
 	return u, nil
 }
 
+func (uR *userRepo) ChangeUserPasswordByEmail(email string, hash string) error {
+	CHANGE_USER_PASSWORD_BY_EMAIL_SQL := `UPDATE users SET password = $1 WHERE email = $2`
+
+	_, err := uR.db.Queryx(CHANGE_USER_PASSWORD_BY_EMAIL_SQL, hash, email)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (uR *userRepo) FetchUserByEmail(email string) (*entities.User, error) {
 	SELECT_USER_BY_EMAIL_SQL := `SELECT * FROM users WHERE email = $1`
 

@@ -4,6 +4,7 @@ import "github.com/gianlucapastori/nausicaa/internal/entities"
 
 type Repo interface {
 	InsertUser(*entities.User) (*entities.User, error)
+	ChangeUserPasswordByEmail(string, string) error
 	FetchUserByEmail(string) (*entities.User, error)
 	FetchUserByUsername(string) (*entities.User, error)
 }

@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/gianlucapastori/nausicaa/cfg"
-	"github.com/gianlucapastori/nausicaa/internal/middleware"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
@@ -42,7 +41,7 @@ func (s *Server) Serve() error {
 		}
 	}()
 
-	if err := s.Map(s.mux, middleware.New(s.cfg, s.sugar)); err != nil {
+	if err := s.Map(s.mux); err != nil {
 		return fmt.Errorf("could not map api: %v", err)
 	}
 

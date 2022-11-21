@@ -15,7 +15,13 @@ func Map(mux *mux.Router, cont users.Controller, mw *middleware.Middleware) {
 	r.Use(mw.AuthRefresh)
 	r.HandleFunc("", cont.RequestNewAccess()).Methods("GET")
 
+	r = mux.PathPrefix("/change-password").Subrouter()
+	r.Use(mw.AuthPwd)
+	r.HandleFunc("", cont.ChangePassword()).Methods("POST")
+
 	mux.HandleFunc("/login", cont.LoginUser()).Methods("POST")
 
 	mux.HandleFunc("/register", cont.RegisterUser()).Methods("POST")
+
+	mux.HandleFunc("/new-password", cont.RequestNewPassword()).Methods("POST")
 }

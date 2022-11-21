@@ -9,6 +9,7 @@ import (
 	"github.com/gianlucapastori/nausicaa/internal/packages/users"
 	"github.com/gianlucapastori/nausicaa/pkg/jwt"
 	"github.com/gianlucapastori/nausicaa/pkg/utils"
+	"github.com/gorilla/context"
 	"go.uber.org/zap"
 )
 
@@ -69,9 +70,8 @@ func (uC *userController) RegisterUser() http.HandlerFunc {
 func (uC *userController) LoginUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		type Request struct {
-			Email                string `json:"email" validate:"email,required"`
-			Password             string `json:"password" validate:"gte=5,required"`
-			PasswordConfirmation string `json:"password_confirmation" validate:"gte=5,required"`
+			Email    string `json:"email" validate:"email,required"`
+			Password string `json:"password" validate:"gte=5,required"`
 		}
 
 		req := &Request{}
@@ -79,11 +79,6 @@ func (uC *userController) LoginUser() http.HandlerFunc {
 		if err := utils.ReadRequest(r, req); err != nil {
 			uC.sugar.Errorf("error while reading request: %v", err.Error())
 			utils.Respond(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		if req.Password != req.PasswordConfirmation {
-			utils.Respond(w, http.StatusBadRequest, "password does not match")
 			return
 		}
 
@@ -114,6 +109,65 @@ func (uC *userController) LoginUser() http.HandlerFunc {
 func (uC *userController) Protected() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		utils.Respond(w, http.StatusOK, "access granted!")
+	}
+}
+
+func (uC *userController) ChangePassword() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		token := context.Get(r, "token")
+		email := context.Get(r, "email")
+		pwd := context.Get(r, "pwd")
+		pwd_conf := context.Get(r, "pwd_conf")
+
+		if token == nil || email == nil || pwd == nil || pwd_conf == nil {
+			utils.Respond(w, http.StatusBadRequest, "malformed request")
+			return
+		}
+
+		if pwd != pwd_conf {
+			utils.Respond(w, http.StatusBadRequest, "password does not match")
+			return
+		}
+
+		if err := uC.serv.ChangePasswordByEmail(email.(string), pwd.(string)); err != nil {
+			utils.Respond(w, 500, err.Error())
+			return
+		}
+
+		utils.Respond(w, 200, "password changed")
+	}
+}
+
+func (uC *userController) RequestNewPassword() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		type Request struct {
+			Email string `json:"email" validate:"email,required"`
+		}
+
+		req := &Request{}
+
+		if err := utils.ReadRequest(r, req); err != nil {
+			uC.sugar.Errorf("error while reading request: %v", err.Error())
+			utils.Respond(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		u, err := uC.serv.FetchByEmail(req.Email)
+		if err != nil {
+			utils.Respond(w, 500, err.Error())
+			return
+		}
+		if u == nil {
+			utils.Respond(w, 403, "user not found with given email")
+			return
+		}
+
+		if err := uC.serv.SendPwdResetEmail(u); err != nil {
+			utils.Respond(w, 500, err.Error())
+			return
+		}
+
+		utils.Respond(w, 200, "email sent")
 	}
 }
 
