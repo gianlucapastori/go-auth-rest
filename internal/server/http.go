@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gianlucapastori/nausicaa/internal/middleware"
-	usersHttp "github.com/gianlucapastori/nausicaa/internal/packages/users/http"
-	usersRepo "github.com/gianlucapastori/nausicaa/internal/packages/users/repo"
-	usersServices "github.com/gianlucapastori/nausicaa/internal/packages/users/services"
-	"github.com/gianlucapastori/nausicaa/pkg/utils"
-	"github.com/gianlucapastori/nausicaa/pkg/validator"
+	"github.com/gianlucapastori/go-auth-jwt/internal/middleware"
+	usersHttp "github.com/gianlucapastori/go-auth-jwt/internal/packages/users/http"
+	usersRepo "github.com/gianlucapastori/go-auth-jwt/internal/packages/users/repo"
+	usersServices "github.com/gianlucapastori/go-auth-jwt/internal/packages/users/services"
+	"github.com/gianlucapastori/go-auth-jwt/pkg/utils"
+	"github.com/gianlucapastori/go-auth-jwt/pkg/validator"
 	"github.com/gorilla/mux"
 )
 

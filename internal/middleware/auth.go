@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gianlucapastori/nausicaa/cfg"
-	"github.com/gianlucapastori/nausicaa/pkg/jwt"
-	"github.com/gianlucapastori/nausicaa/pkg/utils"
+	"github.com/gianlucapastori/go-auth-jwt/cfg"
+	"github.com/gianlucapastori/go-auth-jwt/pkg/jwt"
+	"github.com/gianlucapastori/go-auth-jwt/pkg/utils"
 	jwtgo "github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/context"
 )

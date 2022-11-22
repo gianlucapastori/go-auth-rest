@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gianlucapastori/nausicaa/cfg"
+	"github.com/gianlucapastori/go-auth-jwt/cfg"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"

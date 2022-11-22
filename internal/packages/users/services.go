@@ -1,6 +1,6 @@
 package users
 
-import "github.com/gianlucapastori/nausicaa/internal/entities"
+import "github.com/gianlucapastori/go-auth-jwt/internal/entities"
 
 type Services interface {
 	Register(*entities.User) (*entities.User, error)

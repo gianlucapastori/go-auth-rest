@@ -1,8 +1,8 @@
 package repo
 
 import (
-	"github.com/gianlucapastori/nausicaa/internal/entities"
-	"github.com/gianlucapastori/nausicaa/internal/packages/users"
+	"github.com/gianlucapastori/go-auth-jwt/internal/entities"
+	"github.com/gianlucapastori/go-auth-jwt/internal/packages/users"
 	"github.com/jmoiron/sqlx"
 )
 

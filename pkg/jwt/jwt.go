@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gianlucapastori/nausicaa/cfg"
-	"github.com/gianlucapastori/nausicaa/internal/entities"
+	"github.com/gianlucapastori/go-auth-jwt/cfg"
+	"github.com/gianlucapastori/go-auth-jwt/internal/entities"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 )

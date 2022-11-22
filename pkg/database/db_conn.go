@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/gianlucapastori/nausicaa/cfg"
+	"github.com/gianlucapastori/go-auth-jwt/cfg"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )

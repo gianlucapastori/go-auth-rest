@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/smtp"
 
-	"github.com/gianlucapastori/nausicaa/cfg"
-	"github.com/gianlucapastori/nausicaa/internal/entities"
-	"github.com/gianlucapastori/nausicaa/internal/packages/users"
-	"github.com/gianlucapastori/nausicaa/pkg/jwt"
+	"github.com/gianlucapastori/go-auth-jwt/cfg"
+	"github.com/gianlucapastori/go-auth-jwt/internal/entities"
+	"github.com/gianlucapastori/go-auth-jwt/internal/packages/users"
+	"github.com/gianlucapastori/go-auth-jwt/pkg/jwt"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )

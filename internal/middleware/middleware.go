@@ -3,8 +3,8 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/gianlucapastori/nausicaa/cfg"
-	"github.com/gianlucapastori/nausicaa/internal/packages/users"
+	"github.com/gianlucapastori/go-auth-jwt/cfg"
+	"github.com/gianlucapastori/go-auth-jwt/internal/packages/users"
 	"go.uber.org/zap"
 )
 

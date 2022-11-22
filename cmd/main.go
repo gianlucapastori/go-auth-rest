@@ -3,10 +3,10 @@ package main
 import (
 	"log"
 
-	"github.com/gianlucapastori/nausicaa/cfg"
-	"github.com/gianlucapastori/nausicaa/internal/server"
-	"github.com/gianlucapastori/nausicaa/pkg/database"
-	"github.com/gianlucapastori/nausicaa/pkg/logger"
+	"github.com/gianlucapastori/go-auth-jwt/cfg"
+	"github.com/gianlucapastori/go-auth-jwt/internal/server"
+	"github.com/gianlucapastori/go-auth-jwt/pkg/database"
+	"github.com/gianlucapastori/go-auth-jwt/pkg/logger"
 )
 
 func main() {

@@ -1,8 +1,8 @@
 package http
 
 import (
-	"github.com/gianlucapastori/nausicaa/internal/middleware"
-	"github.com/gianlucapastori/nausicaa/internal/packages/users"
+	"github.com/gianlucapastori/go-auth-jwt/internal/middleware"
+	"github.com/gianlucapastori/go-auth-jwt/internal/packages/users"
 	"github.com/gorilla/mux"
 )
 

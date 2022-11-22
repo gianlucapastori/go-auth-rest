@@ -1,4 +1,4 @@
-module github.com/gianlucapastori/nausicaa
+module github.com/gianlucapastori/go-auth-jwt
 
 go 1.19
 

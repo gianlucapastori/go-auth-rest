@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gianlucapastori/nausicaa/pkg/validator"
+	"github.com/gianlucapastori/go-auth-jwt/pkg/validator"
 )
 
 func Respond(w http.ResponseWriter, status int, message string) {
