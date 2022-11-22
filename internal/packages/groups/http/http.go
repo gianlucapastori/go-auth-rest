@@ -7,5 +7,7 @@ import (
 )
 
 func Map(mux *mux.Router, cont groups.Controller, mw *middleware.Middleware) {
-
+	r := mux.PathPrefix("/create-group").Subrouter()
+	r.Use(mw.AuthJWT)
+	r.HandleFunc("", cont.CreateGroup()).Methods("POST")
 }

@@ -30,7 +30,7 @@ func RequestTokens(user *entities.User, cfg *cfg.Config) (string, string, error)
 		UserId:   user.Id,
 		Username: user.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(rand.Int31n(cfg.SERVER.JWT.ACCESS_EXPIRES_AT)) * time.Minute)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(rand.Int31n(cfg.SERVER.JWT.ACCESS_EXPIRES_AT)) * 87987 * time.Minute)),
 		},
 	}
 
@@ -40,6 +40,7 @@ func RequestTokens(user *entities.User, cfg *cfg.Config) (string, string, error)
 
 	acctoken := jwt.NewWithClaims(jwt.SigningMethodHS256, accclaims)
 	reftoken := jwt.NewWithClaims(jwt.SigningMethodHS256, refclaims)
+
 	accTokenStr, err := acctoken.SignedString([]byte(cfg.SERVER.JWT.SECRET_KEY_ACCESS))
 	if err != nil {
 		return "", "", err
